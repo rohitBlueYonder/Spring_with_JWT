@@ -14,31 +14,29 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
+    private UserRepository userRepository;
+    private TokenService tokenService;
+
+
+    @Autowired
+    public UserService(UserRepository userRepository, TokenService tokenService) {
         this.userRepository = userRepository;
+        this.tokenService = tokenService;
     }
 
-    public User getUser(ObjectId userId){
-        Optional<User> result = userRepository.findOne(new Example<User>() {
-            @Override
-            public User getProbe() {
-                return null;
-            }
-
-            @Override
-            public ExampleMatcher getMatcher() {
-                return null;
-            }
-        });
-        return result.get();
+    public User getUser(ObjectId userId)
+    {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        return  optionalUser.orElseGet(optionalUser::get);
     }
 
     public String saveUser(User user){
-        userRepository.save(user);
-        return "User created successfully";
+        User savedUser = userRepository.save(user);
+        String required_output = "Message: Successfully Created User" +
+                "\nToken String: " + tokenService.createToken(savedUser.getId()) +
+                "\n User Data: "+ savedUser;
+        return required_output;
     }
 
 

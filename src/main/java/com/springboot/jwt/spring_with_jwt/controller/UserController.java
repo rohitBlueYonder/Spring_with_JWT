@@ -6,6 +6,8 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -22,8 +24,9 @@ public class UserController {
         return userService.saveUser(user);
     }
 
-    @GetMapping("/getUserDetails/{userId}")
-    public User getUserDetails(@PathVariable ObjectId userId){
+    @GetMapping("/getUserDetails")
+    public User getUserDetails(HttpServletRequest httpServletRequest){
+        ObjectId userId = (ObjectId) httpServletRequest.getAttribute("userId");
         return userService.getUser(userId);
     }
 }
